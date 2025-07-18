@@ -1,0 +1,7 @@
+{
+  "name": "flexsearch-app",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular-standalone"
+}
