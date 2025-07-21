@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import FlexSearch from 'flexsearch';
+import { Charset, Encoder } from 'flexsearch';
 
 interface FileDoc {
   name: string;
@@ -18,11 +19,13 @@ export class FlexService {
     { name: 'work-instruction.pdf', content: 'The work instruction for ST-1500 Ideal covers the process of raising the substructure and begins with gathering required tools and equipment such as hand tools and a linear measuring device. The procedure starts with a pre-use inspection, where workers visually inspect the hydraulic tank volume, hoses, and fittings for leaks or damage, check that spring mechanisms on hydraulic fittings and ram cylinders are in good order, and ensure the substructure area has a clear, unobstructed path for movement. All employees on location are notified of the designated danger zone, which must be maintained until job completion, while all lines are checked for correct connections, oil and fuel levels are verified prior to starting the engine, and the linear measuring device is installed. Next, the hydraulic power unit engine is started, ensuring that circulating valves are open on the octopus before startup. After the engine starts, circulating valves are closed, the engine is allowed to idle and warm up for fifteen minutes, then brought to operational rpm as the pump is gradually increased to 2,500 psi (17,237 kPa). Throughout this process, engine temperature and hydraulic pressure are monitored, and the system is circulated sufficiently to remove any air by stroking each cylinder fully up and down at least twice. The substructure is then unpinned, with communication between the team and the hydraulic power unit operator to ensure hydraulics are not engaged while pins are being removed; if pins are stuck, a designated flagger directs any necessary minor adjustments. Once removed, the pins are kept ready for reinstallation after the substructure is raised. The HPU operator raises the substructure one foot out of the pockets and stops for five minutes to verify that cylinders are holding without bleeding down. All workers closely observe as the substructure is raised to ensure it lifts evenly and to watch for any snags or binding, speaking up if potential issues arise. In the event of cylinder control failure, workers follow specific steps: if hydraulic cylinders are not at the final stage, the substructure is allowed to lower evenly, potentially by pressurizing one side to maintain even loading, but the HPU is never turned off. If the cylinders are at the final stage, raising continues and the substructure is re-pinned, with the HPU remaining powered. Once raised, all operations are halted until the substructure support beams are pinned, guided into place by four employees on each walking foot support beam to prevent pad eyes from contacting each other during the final four feet of raising, under the direction of a designated flagger who signals the HPU operator as needed. The procedure concludes by shutting down the hydraulic unit, idling down the engine, bleeding off the pressure using bleed-off valves on the octopus, and operating the controls to release any remaining trapped pressure.' }
   ];
 
+    encoder = new Encoder(
+    Charset.LatinSoundex, // Use Latin Soundex for phonetic matching
+  );
   constructor() {
     this.index = new FlexSearch.Document<FileDoc>({
-        tokenize: 'forward',   // for partial/prefix matches
-        encode: (text: string) => text.toLowerCase().split(/\s+/),
-       // case-insensitive matching
+        encoder: this.encoder,
+        tokenize: 'forward',   // for partial/prefix matches,
       document: {
         id: 'name',
         index: ['name','content']
@@ -36,7 +39,11 @@ export class FlexService {
   }
 
   async search(query: string): Promise<FileDoc[]> {
-  const results = await this.index.search(query, { enrich: true });
+  const results = await this.index.search(query, { 
+    enrich: true,
+    suggest: true,
+    threshold: 2 
+  });
   console.log('FULL RAW SEARCH RESULT', results);
 
   // Flatten results
@@ -55,7 +62,4 @@ export class FlexService {
   console.log('Search results for query:', query, docs);
   return docs;
 }
-
-
-
 } 
