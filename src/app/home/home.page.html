@@ -7,11 +7,18 @@
     <ion-content class="ion-padding">
       <ion-input [(ngModel)]="query" (ionInput)="onSearch()" placeholder="Search files..."></ion-input>
       <ion-list>
+        <ng-container *ngIf="results.length; else noResults">
         <ion-item *ngFor="let result of results">
           <p [innerHTML]="highlightTerm(result.name, query)" class="result-name"></p>
           <p [innerHTML]="highlightTerm(result.content, query)" class="result-content"></p>
           <!-- <p class="result-name">{{ result.name }}</p>
           <p class="result-content">{{ result.content }}</p> -->
         </ion-item>
+         </ng-container>
+          <ng-template #noResults>
+            <ion-item>
+              <p>No matching results found.</p>
+            </ion-item>
+          </ng-template>
       </ion-list>
     </ion-content>
