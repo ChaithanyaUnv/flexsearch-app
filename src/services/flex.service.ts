@@ -25,7 +25,7 @@ export class FlexService {
        // case-insensitive matching
       document: {
         id: 'name',
-        index: ['content']
+        index: ['name','content']
       }
     });
 
@@ -55,5 +55,7 @@ export class FlexService {
   console.log('Search results for query:', query, docs);
   return docs;
 }
+
+
 
 } 

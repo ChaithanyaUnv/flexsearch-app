@@ -24,4 +24,13 @@ export class HomePage {
       this.results = [];
     }
   }
+
+  highlightTerm(text: string, query: string): string {
+  if (!query) return text;
+  const safeQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return text.replace(
+    new RegExp(`(${safeQuery})`, 'gi'),
+    '<mark>$1</mark>'
+  );
+}
 }
